@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="Lauren Kennedy" />
+
+<meta name="date" content="2018-01-21" />
+
+<title>MRP in RStanArm</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceLine, a.sourceLine { display: inline-block; min-height: 1.25em; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; }
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+div.sourceLine, a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource div.sourceLine, .numberSource a.sourceLine
+  { position: relative; }
+pre.numberSource div.sourceLine::before, .numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em; }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; color: #aaaaaa;  padding-left: 4px; }
+@media screen {
+a.sourceLine::before { text-decoration: underline; color: initial; }
+}
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.bn { color: #40a070; } /* BaseN */
+code span.fl { color: #40a070; } /* Float */
+code span.ch { color: #4070a0; } /* Char */
+code span.st { color: #4070a0; } /* String */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.ot { color: #007020; } /* Other */
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.fu { color: #06287e; } /* Function */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code span.cn { color: #880000; } /* Constant */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.im { } /* Import */
+code span.va { color: #19177c; } /* Variable */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.op { color: #666666; } /* Operator */
+code span.bu { } /* BuiltIn */
+code span.ex { } /* Extension */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.at { color: #7d9029; } /* Attribute */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#header {
+text-align: center;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">MRP in RStanArm</h1>
+<h4 class="author"><em>Lauren Kennedy</em></h4>
+<h4 class="date"><em>2018-01-21</em></h4>
+
+
+
+<!--
+%\VignetteEngine{knitr::rmarkdown}
+%\VignetteIndexEntry{stan_mrp: MRP in rstanarm}
+-->
+<p>Inference about the population is one the main aims of statistical methodology. Multi-level regression with post-stratification <span class="citation" data-cites="little1993post lax2009should park2004bayesian">(Little 1993; Lax and Phillips 2009; Park, Gelman, and Bafumi 2004)</span> has been shown to be an effective method of adjusting the sample so that it is representative of the population for a set of key variables. Recent work has demonstrated the effectiveness of MRP when there are a number of suspected interactions between these variables <span class="citation" data-cites="ghitza2013deep">(Ghitza and Gelman 2013)</span>, replicated by <span class="citation" data-cites="lei20172008">Lei, Gelman, and Ghitza (2017)</span>. While <span class="citation" data-cites="ghitza2013deep">Ghitza and Gelman (2013)</span> use approximate marginal maximum likelihood estimates; <span class="citation" data-cites="lei20172008">Lei, Gelman, and Ghitza (2017)</span> implement a fully Bayesian approach through Stan.</p>
+<p>Recently, the <span class="citation" data-cites="RStanArm">Stan Development Team (2016)</span> have implemented a package (rstanarm) that allows the user to conduct complicated regression analyses in Stan with the simplicity of standard formula notation in R. The purpose of this vignette is to demonstrate the utility of this package when conducting MRP analyses. We will not delve into the details of conducting logistic regression with rstanarm as this is already covered in <a href="https://cran.r-project.org/web/packages/rstanarm/vignettes/binomial.html">other vignettes</a>. All of the data is simulated and <a href="https://github.com/lauken13/MRPinRStanArm">available through Github</a> <!--before demonstrating the power of this methodology using a longitudinal study of poverty (for more details, see here). --></p>
+<pre class="sourceCode r" id="cb1"><code class="sourceCode r"><div class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">library</span>(arm)</div>
+<div class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(rstanarm)</div>
+<div class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">library</span>(ggplot2)</div>
+<div class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw">library</span>(dplyr)</div>
+<div class="sourceLine" id="cb1-5" data-line-number="5"><span class="kw">library</span>(gridExtra)</div>
+<div class="sourceLine" id="cb1-6" data-line-number="6"><span class="kw">library</span>(data.table)</div>
+<div class="sourceLine" id="cb1-7" data-line-number="7"><span class="kw">library</span>(tidyr)</div>
+<div class="sourceLine" id="cb1-8" data-line-number="8"><span class="kw">library</span>(knitr)</div></code></pre>
+<section id="the-data" class="level1">
+<h1>The Data</h1>
+<p>Three data sets can be sourced from <a href="https://github.com/lauken13/MRPinRStanArm">LK’s Github page</a>. The first, <em>sample</em> contains <span class="math inline">\(3,000\)</span> observations from the individuals that form our sample (i.e., <span class="math inline">\(3,000\)</span> rows). For each individual we have their age (recorded as membership within a specific age bracket), ethnicity, income level (recorded as membership within a specific bracket), and sex/gender. Participants were randomly sampled from a state. The outcome variable of interest is a binary variable (MRP can also be used with a continuous variable outcome variable). Oftentimes this is the outcome of a two option fixed choice question (for example McCain’s share of two party vote <span class="citation" data-cites="ghitza2013deep">(Ghitza and Gelman 2013)</span>; support for George W Bush, <span class="citation" data-cites="park2004bayesian">(Park, Gelman, and Bafumi 2004)</span>; or support for the death penalty <span class="citation" data-cites="shirley2015hierarchical">(Shirley and Gelman 2015)</span>). As this is a simple toy example, we will describe the proportion of the population who would choose to adopt a cat over a dog, given the chance. The following code loads this data in straight from Github. Depending on your operating system and firewall, this may not work. An alternative is to download and load the data in R as per usual.</p>
+<pre class="sourceCode r" id="cb2"><code class="sourceCode r"><div class="sourceLine" id="cb2-1" data-line-number="1">sample &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="kw">fread</span>(<span class="st">'https://raw.githubusercontent.com/lauken13/MRPinRStanArm/master/simulated_data.csv'</span>))</div>
+<div class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">rbind</span>(<span class="kw">head</span>(sample),<span class="kw">tail</span>(sample))</div></code></pre>
+<pre><code>##        V1 cat.pref sex age eth income state   id
+## 1       1        1   2   1   3      2     2    1
+## 2       2        1   2   5   3      2     2    2
+## 3       3        1   1   3   3      1     5    3
+## 4       4        0   1   3   2      3     4    4
+## 5       5        0   1   1   3      1     2    5
+## 6       6        1   1   1   4      2     3    6
+## 2995 2995        1   1   4   4      2     2 2995
+## 2996 2996        1   2   3   4      3     5 2996
+## 2997 2997        0   2   5   3      3     3 2997
+## 2998 2998        1   1   2   4      5     3 2998
+## 2999 2999        1   1   4   4      3     1 2999
+## 3000 3000        1   2   5   3      1     2 3000</code></pre>
+<p>The variables describing the individual (age, ethnicity, income level and gender) will be use to match the sample to the population of interest. To do this we will need to form a post-stratification table, which contains the number of people in each possible combination of post-stratification variable. As we have 4 variables with 2 (sex), 5 (age), 4 (ethnicity) and 5 (income) levels, there are 2x5x4x5 different levels. Participants are also selected from a state (5), increasing the number of possible levels to <span class="math inline">\(1,000\)</span>.</p>
+<!--As we are interested in the population, we also need estimates of the size of the population and the number of people in eachn comibation of post-stratification variable (i.e., the number of women over the age of 50 who earn over 50,000; are of European descent and live in city 1, stae 1). This it the post-stratification matrix, for which a census is often used. This is contained within the variable poststrat.-->
+<p>To make inference about the population, we will also need the proportion of the population in each post stratification cell at the <em>population</em> level. We will use this information to update the estimate of our outcome variable from the sample so that is more representative of the population. This is particularly helpful if there is a belief that the sample has some bias (i.e., a greater proportion of females responded than males), and that bias impacts the outcome variable (i.e, women are more likely to adopt a cat than men). For each possible combination of factors, the post-stratification table shows the proportion/number of the population in that cell (rather than the proportion/number in the sample in the cell). Below we read in the poststrat data from Github and print a section of rows.</p>
+<pre class="sourceCode r" id="cb4"><code class="sourceCode r"><div class="sourceLine" id="cb4-1" data-line-number="1">poststrat &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="kw">fread</span>(<span class="st">'https://raw.githubusercontent.com/lauken13/MRPinRStanArm/master/poststrat.csv'</span>))</div>
+<div class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">rbind</span>(<span class="kw">head</span>(poststrat),<span class="kw">tail</span>(poststrat))</div></code></pre>
+<pre><code>##        V1 sex eth age income state      N
+## 1       1   1   1   1      1     1 416000
+## 2       2   1   1   1      1     2 624000
+## 3       3   1   1   1      1     3 416000
+## 4       4   1   1   1      1     4 208000
+## 5       5   1   1   1      1     5 416000
+## 6       6   1   1   1      2     1 260000
+## 995   995   2   4   5      4     5  60000
+## 996   996   2   4   5      5     1  60000
+## 997   997   2   4   5      5     2  90000
+## 998   998   2   4   5      5     3  60000
+## 999   999   2   4   5      5     4  30000
+## 1000 1000   2   4   5      5     5  60000</code></pre>
+<p>One of the benefits of using a simulated data set for this example is that the actual, population level probability of cat preference is known for each post-stratification cell. In real world data analysis, we don’t have this luxury, but we will use it later in this case study to check the predictions of the model. Here we load the variable true.popn from Github. Details regarding the simulation of this data are available <a href="https://github.com/lauken13/MRPinRStanArm/blob/master/Creating%20the%20simulated%20data.md">here</a>.</p>
+<pre class="sourceCode r" id="cb6"><code class="sourceCode r"><div class="sourceLine" id="cb6-1" data-line-number="1">true.popn &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="kw">fread</span>(<span class="st">'https://raw.githubusercontent.com/lauken13/MRPinRStanArm/master/simulated_prob.csv'</span>))</div>
+<div class="sourceLine" id="cb6-2" data-line-number="2"><span class="kw">rbind</span>(<span class="kw">head</span>(true.popn),<span class="kw">tail</span>(true.popn))</div></code></pre>
+<pre><code>##        V1 sex eth age income state  cat.pref
+## 1       1   1   1   1      1     1 0.5000000
+## 2       2   1   1   1      1     2 0.5249792
+## 3       3   1   1   1      1     3 0.5000000
+## 4       4   1   1   1      1     4 0.5000000
+## 5       5   1   1   1      1     5 0.5498340
+## 6       6   1   1   1      2     1 0.4501660
+## 995   995   2   4   5      4     5 0.7685248
+## 996   996   2   4   5      5     1 0.7685248
+## 997   997   2   4   5      5     2 0.7858350
+## 998   998   2   4   5      5     3 0.7685248
+## 999   999   2   4   5      5     4 0.7685248
+## 1000 1000   2   4   5      5     5 0.8021839</code></pre>
+</section>
+<section id="exploring-graphically" class="level1">
+<h1>Exploring Graphically</h1>
+<p>Before we begin with the MRP analysis, we first explore the data set with some basic visualizations.</p>
+<section id="comparing-sample-to-population" class="level2">
+<h2>Comparing sample to population</h2>
+<p>The aim of this analysis is to obtain a  estimation of cat preference given our sample of <span class="math inline">\(3,000\)</span>. We can see in the following plot the difference in proportions between the sample and the population. Horizontal panels represent each variable. Bars represent the proportion of the sample (opaque) and population (transparent) in each category (represented by colour and the x-axis). Note in particular that one state was over sampled compared to the population while other cities were comparatively under sampled. <!--Colours represent the different categories for each variable, each plotted in the horizontal facets for both the sample (left bar) and the population (right bar). The *y-axis* represents the proportion of people in each level of poststratification variable.--></p>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+</section>
+</section>
+<section id="effect-of-the-post-stratification-variable-on-preference-for-cats" class="level1">
+<h1>Effect of the post-stratification variable on preference for cats</h1>
+<p>Secondly; we consider the evidence of different proportions across different levels of a post-stratification variable; which we should consider for each of the post-stratification variables. Here we break down the proportion of individuals who would prefer a cat (<em>y-axis</em>) by different levels (<em>x-axis</em>) of the post-stratification variable (<em>horizontal panels</em>). We can see from this figure that there appears to be differences in cat preference for the different levels of post-stratification variables. Given the previous figure, which suggested that the sample was different to the population in the share of different levels of theses variables, this should suggest that using the sample to estimate cat preference may not give accurate estimates of cat preference in the population.</p>
+<pre class="sourceCode r" id="cb8"><code class="sourceCode r"><div class="sourceLine" id="cb8-1" data-line-number="1"><span class="co">#Summarise</span></div>
+<div class="sourceLine" id="cb8-2" data-line-number="2">temp&lt;-sample<span class="op">%&gt;%</span></div>
+<div class="sourceLine" id="cb8-3" data-line-number="3"><span class="st">  </span><span class="kw">gather</span>(variable,category,<span class="kw">c</span>(<span class="st">&quot;income&quot;</span>,<span class="st">&quot;eth&quot;</span>,<span class="st">&quot;age&quot;</span>,<span class="st">&quot;sex&quot;</span>))<span class="op">%&gt;%</span></div>
+<div class="sourceLine" id="cb8-4" data-line-number="4"><span class="st">  </span><span class="kw">group_by</span>(variable,category)<span class="op">%&gt;%</span></div>
+<div class="sourceLine" id="cb8-5" data-line-number="5"><span class="st">  </span><span class="kw">summarise</span>(<span class="dt">y.mean=</span><span class="kw">mean</span>(cat.pref),<span class="dt">y.sd=</span><span class="kw">sqrt</span>(<span class="kw">mean</span>(cat.pref)<span class="op">*</span>(<span class="dv">1</span><span class="op">-</span><span class="kw">mean</span>(cat.pref))<span class="op">/</span><span class="kw">n</span>()))<span class="op">%&gt;%</span></div>
+<div class="sourceLine" id="cb8-6" data-line-number="6"><span class="st">  </span><span class="kw">ungroup</span>()</div>
+<div class="sourceLine" id="cb8-7" data-line-number="7">temp<span class="op">$</span>variable&lt;-<span class="kw">as.factor</span>(temp<span class="op">$</span>variable)</div>
+<div class="sourceLine" id="cb8-8" data-line-number="8"><span class="kw">levels</span>(temp<span class="op">$</span>variable)&lt;-<span class="st"> </span><span class="kw">list</span>(<span class="st">'Age'</span>=<span class="st">'age'</span>,<span class="st">'Ethnicity'</span>=<span class="st">'eth'</span>,<span class="st">'Income'</span>=<span class="st">'income'</span>,<span class="st">'Sex'</span>=<span class="st">'sex'</span>)</div>
+<div class="sourceLine" id="cb8-9" data-line-number="9"></div>
+<div class="sourceLine" id="cb8-10" data-line-number="10"><span class="kw">ggplot</span>(<span class="dt">data=</span>temp, <span class="kw">aes</span>(<span class="dt">x=</span><span class="kw">as.factor</span>(category), <span class="dt">y=</span>y.mean, <span class="dt">colour=</span><span class="kw">as.factor</span>(category))) <span class="op">+</span></div>
+<div class="sourceLine" id="cb8-11" data-line-number="11"><span class="st">  </span><span class="kw">geom_errorbar</span>(<span class="kw">aes</span>(<span class="dt">ymin=</span>y.mean<span class="op">-</span>y.sd, <span class="dt">ymax=</span>y.mean<span class="op">+</span>y.sd), <span class="dt">width=</span>.<span class="dv">1</span>,<span class="dt">size=</span><span class="dv">1</span>,<span class="dt">position=</span><span class="kw">position_dodge</span>(.<span class="dv">05</span>))<span class="op">+</span></div>
+<div class="sourceLine" id="cb8-12" data-line-number="12"><span class="st">  </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">x=</span>category, <span class="dt">y=</span>y.mean),<span class="dt">colour=</span><span class="st">&quot;grey&quot;</span>,<span class="dt">size=</span><span class="dv">1</span>)<span class="op">+</span></div>
+<div class="sourceLine" id="cb8-13" data-line-number="13"><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">size=</span><span class="dv">4</span>)<span class="op">+</span><span class="kw">ylim</span>(<span class="kw">c</span>(<span class="fl">0.45</span>,<span class="dv">1</span>))<span class="op">+</span></div>
+<div class="sourceLine" id="cb8-14" data-line-number="14"><span class="st">  </span><span class="kw">scale_colour_manual</span>(<span class="dt">values=</span><span class="kw">c</span>(<span class="st">'#1f78b4'</span>,<span class="st">'#33a02c'</span>,<span class="st">'#e31a1c'</span>,<span class="st">'#ff7f00'</span>,</div>
+<div class="sourceLine" id="cb8-15" data-line-number="15">                             <span class="st">'#8856a7'</span>))<span class="op">+</span><span class="kw">theme_bw</span>()<span class="op">+</span><span class="kw">facet_wrap</span>(<span class="op">~</span>variable,<span class="dt">scales =</span> <span class="st">&quot;free_x&quot;</span>,<span class="dt">nrow=</span><span class="dv">1</span>,<span class="dt">ncol=</span><span class="dv">5</span>)<span class="op">+</span></div>
+<div class="sourceLine" id="cb8-16" data-line-number="16"><span class="st">  </span></div>
+<div class="sourceLine" id="cb8-17" data-line-number="17"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;&quot;</span>,<span class="dt">y=</span><span class="st">&quot;Cat preference&quot;</span>)<span class="op">+</span></div>
+<div class="sourceLine" id="cb8-18" data-line-number="18"><span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>,</div>
+<div class="sourceLine" id="cb8-19" data-line-number="19">        <span class="dt">axis.title.y=</span><span class="kw">element_text</span>(<span class="dt">size=</span><span class="dv">15</span>),</div>
+<div class="sourceLine" id="cb8-20" data-line-number="20">        <span class="dt">axis.title.x=</span><span class="kw">element_blank</span>(),</div>
+<div class="sourceLine" id="cb8-21" data-line-number="21">        <span class="dt">axis.text=</span><span class="kw">element_text</span>(<span class="dt">size=</span><span class="dv">10</span>),</div>
+<div class="sourceLine" id="cb8-22" data-line-number="22">        <span class="dt">strip.text=</span><span class="kw">element_text</span>(<span class="dt">size=</span><span class="dv">15</span>),</div>
+<div class="sourceLine" id="cb8-23" data-line-number="23">        <span class="dt">strip.background =</span> <span class="kw">element_rect</span>(<span class="dt">fill=</span><span class="st">'grey92'</span>))</div></code></pre>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+<section id="interaction-effect" class="level2">
+<h2>Interaction effect</h2>
+<p>Thirdly, we demonstrate visually that there is an interaction between age and gender; and to compare this interaction to a case where there is no interaction. Here a simulated interaction effect between age (<em>x-axis</em>) and gender (<em>shape</em>), right panel, is contrasted with no interaction effect (<em>left panel</em>). While both panels demonstrate a difference between the genders and the proportion (<em>y-axis</em>), only the second panel shows this difference changing with the variable on the x-axis.</p>
+<pre class="sourceCode r" id="cb9"><code class="sourceCode r"><div class="sourceLine" id="cb9-1" data-line-number="1"><span class="co">#Summarise</span></div>
+<div class="sourceLine" id="cb9-2" data-line-number="2"></div>
+<div class="sourceLine" id="cb9-3" data-line-number="3">interaction&lt;-sample<span class="op">%&gt;%</span></div>
+<div class="sourceLine" id="cb9-4" data-line-number="4"><span class="st">  </span><span class="kw">gather</span>(variable,category,<span class="kw">c</span>(<span class="st">&quot;age&quot;</span>,<span class="st">&quot;eth&quot;</span>))<span class="op">%&gt;%</span></div>
+<div class="sourceLine" id="cb9-5" data-line-number="5"><span class="st">  </span><span class="kw">group_by</span>(variable,category,sex)<span class="op">%&gt;%</span></div>
+<div class="sourceLine" id="cb9-6" data-line-number="6"><span class="st">  </span><span class="kw">summarise</span>(<span class="dt">y.mean=</span><span class="kw">mean</span>(cat.pref),<span class="dt">y.sd=</span><span class="kw">sqrt</span>(<span class="kw">mean</span>(cat.pref)<span class="op">*</span>(<span class="dv">1</span><span class="op">-</span><span class="kw">mean</span>(cat.pref))<span class="op">/</span><span class="kw">n</span>()))<span class="op">%&gt;%</span></div>
+<div class="sourceLine" id="cb9-7" data-line-number="7"><span class="st">  </span><span class="kw">ungroup</span>()</div>
+<div class="sourceLine" id="cb9-8" data-line-number="8"><span class="co">#Tidy for nice facet labels</span></div>
+<div class="sourceLine" id="cb9-9" data-line-number="9">interaction<span class="op">$</span>variable&lt;-<span class="kw">as.factor</span>(interaction<span class="op">$</span>variable)</div>
+<div class="sourceLine" id="cb9-10" data-line-number="10"><span class="kw">levels</span>(interaction<span class="op">$</span>variable)&lt;-<span class="st"> </span><span class="kw">list</span>(<span class="st">'Ethnicity'</span>=<span class="st">'eth'</span>,<span class="st">'Age'</span>=<span class="st">'age'</span>)</div>
+<div class="sourceLine" id="cb9-11" data-line-number="11"><span class="co">#Plot</span></div>
+<div class="sourceLine" id="cb9-12" data-line-number="12"><span class="kw">ggplot</span>(<span class="dt">data=</span>interaction, <span class="kw">aes</span>(<span class="dt">x=</span><span class="kw">as.factor</span>(category), <span class="dt">y=</span>y.mean, <span class="dt">colour=</span><span class="kw">as.factor</span>(sex))) <span class="op">+</span></div>
+<div class="sourceLine" id="cb9-13" data-line-number="13"><span class="st">  </span><span class="kw">geom_errorbar</span>(<span class="kw">aes</span>(<span class="dt">ymin=</span>y.mean<span class="op">-</span>y.sd, <span class="dt">ymax=</span>y.mean<span class="op">+</span>y.sd), <span class="dt">width=</span>.<span class="dv">1</span>,<span class="dt">size=</span><span class="dv">1</span>,<span class="dt">position=</span><span class="kw">position_dodge</span>(.<span class="dv">05</span>))<span class="op">+</span></div>
+<div class="sourceLine" id="cb9-14" data-line-number="14"><span class="st">  </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">x=</span>category, <span class="dt">y=</span>y.mean,<span class="dt">colour=</span><span class="kw">as.factor</span>(sex)),<span class="dt">size=</span><span class="dv">1</span>)<span class="op">+</span></div>
+<div class="sourceLine" id="cb9-15" data-line-number="15"><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">size=</span><span class="dv">4</span>)<span class="op">+</span><span class="kw">ylim</span>(<span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">1</span>))<span class="op">+</span></div>
+<div class="sourceLine" id="cb9-16" data-line-number="16"><span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span>variable,<span class="dt">scales =</span> <span class="st">&quot;free_x&quot;</span>,<span class="dt">nrow=</span><span class="dv">1</span>,<span class="dt">ncol=</span><span class="dv">2</span>)<span class="op">+</span></div>
+<div class="sourceLine" id="cb9-17" data-line-number="17"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;&quot;</span>,<span class="dt">y=</span><span class="st">&quot;Cat preference&quot;</span>,<span class="dt">colour=</span><span class="st">'Gender'</span>)<span class="op">+</span></div>
+<div class="sourceLine" id="cb9-18" data-line-number="18"><span class="st">  </span><span class="kw">scale_colour_manual</span>(<span class="dt">values=</span><span class="kw">c</span>(<span class="st">'#1f78b4'</span>,<span class="st">'#33a02c'</span>,<span class="st">'#e31a1c'</span>,<span class="st">'#ff7f00'</span>,</div>
+<div class="sourceLine" id="cb9-19" data-line-number="19">                               <span class="st">'#8856a7'</span>))<span class="op">+</span><span class="kw">theme_bw</span>()<span class="op">+</span></div>
+<div class="sourceLine" id="cb9-20" data-line-number="20"><span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;bottom&quot;</span>,</div>
+<div class="sourceLine" id="cb9-21" data-line-number="21">        <span class="dt">axis.title=</span><span class="kw">element_text</span>(<span class="dt">size=</span><span class="dv">20</span>),</div>
+<div class="sourceLine" id="cb9-22" data-line-number="22">        <span class="dt">axis.text=</span><span class="kw">element_text</span>(<span class="dt">size=</span><span class="dv">15</span>),</div>
+<div class="sourceLine" id="cb9-23" data-line-number="23">        <span class="dt">legend.title=</span><span class="kw">element_text</span>(<span class="dt">size=</span><span class="dv">10</span>),</div>
+<div class="sourceLine" id="cb9-24" data-line-number="24">        <span class="dt">legend.text=</span><span class="kw">element_text</span>(<span class="dt">size=</span><span class="dv">10</span>),</div>
+<div class="sourceLine" id="cb9-25" data-line-number="25">        <span class="dt">strip.text=</span><span class="kw">element_text</span>(<span class="dt">size=</span><span class="dv">15</span>),</div>
+<div class="sourceLine" id="cb9-26" data-line-number="26">        <span class="dt">strip.background =</span> <span class="kw">element_rect</span>(<span class="dt">fill=</span><span class="st">'grey92'</span>))</div></code></pre>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+</section>
+<section id="design-effect" class="level2">
+<h2>Design effect</h2>
+<p>Lastly we look at the difference in cat preference between states, which will form the basis for the multi-level component of our analysis. Participants were randomly selected from particular states. Plotting the state (<em>x-axis</em>) against the overall proportion of participants who prefer cats (<em>y-axis</em>) demonstrates state differences. We also include a horizontal line to represent the overall preference for cats in the total population, according to the sample.</p>
+<pre class="sourceCode r" id="cb10"><code class="sourceCode r"><div class="sourceLine" id="cb10-1" data-line-number="1"><span class="co">#Summarise by state</span></div>
+<div class="sourceLine" id="cb10-2" data-line-number="2"></div>
+<div class="sourceLine" id="cb10-3" data-line-number="3">Estimates&lt;-sample<span class="op">%&gt;%</span></div>
+<div class="sourceLine" id="cb10-4" data-line-number="4"><span class="st">  </span><span class="kw">group_by</span>(state)<span class="op">%&gt;%</span></div>
+<div class="sourceLine" id="cb10-5" data-line-number="5"><span class="st">  </span><span class="kw">summarise</span>(<span class="dt">y.mean=</span><span class="kw">mean</span>(cat.pref),<span class="dt">y.sd=</span><span class="kw">sqrt</span>(<span class="kw">mean</span>(cat.pref)<span class="op">*</span>(<span class="dv">1</span><span class="op">-</span><span class="kw">mean</span>(cat.pref))<span class="op">/</span><span class="kw">n</span>()))<span class="op">%&gt;%</span></div>
+<div class="sourceLine" id="cb10-6" data-line-number="6"><span class="st">  </span><span class="kw">ungroup</span>()</div>
+<div class="sourceLine" id="cb10-7" data-line-number="7"></div>
+<div class="sourceLine" id="cb10-8" data-line-number="8">compare&lt;-<span class="kw">ggplot</span>(<span class="dt">data=</span>Estimates, <span class="kw">aes</span>(<span class="dt">x=</span><span class="kw">as.factor</span>(state), <span class="dt">y=</span>y.mean, <span class="dt">colour=</span><span class="kw">as.factor</span>(state))) <span class="op">+</span></div>
+<div class="sourceLine" id="cb10-9" data-line-number="9"><span class="st">  </span><span class="kw">geom_hline</span>(<span class="dt">yintercept =</span> <span class="kw">mean</span>(sample<span class="op">$</span>cat.pref),<span class="dt">size=</span><span class="dv">1</span>)<span class="op">+</span></div>
+<div class="sourceLine" id="cb10-10" data-line-number="10"><span class="st">  </span><span class="kw">geom_errorbar</span>(<span class="kw">aes</span>(<span class="dt">ymin=</span>y.mean<span class="op">-</span>y.sd, <span class="dt">ymax=</span>y.mean<span class="op">+</span>y.sd), <span class="dt">width=</span>.<span class="dv">1</span>,<span class="dt">size=</span><span class="dv">1</span>)<span class="op">+</span></div>
+<div class="sourceLine" id="cb10-11" data-line-number="11"><span class="st">  </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">x=</span>state, <span class="dt">y=</span>y.mean),<span class="dt">size=</span><span class="dv">1</span>)<span class="op">+</span></div>
+<div class="sourceLine" id="cb10-12" data-line-number="12"><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">size=</span><span class="dv">4</span>)<span class="op">+</span><span class="kw">ylim</span>(<span class="kw">c</span>(<span class="fl">0.5</span>,.<span class="dv">75</span>))<span class="op">+</span></div>
+<div class="sourceLine" id="cb10-13" data-line-number="13"><span class="st">  </span><span class="kw">scale_colour_manual</span>(<span class="dt">values=</span><span class="kw">c</span>(<span class="st">'#1f78b4'</span>,<span class="st">'#33a02c'</span>,<span class="st">'#e31a1c'</span>,<span class="st">'#ff7f00'</span>,</div>
+<div class="sourceLine" id="cb10-14" data-line-number="14">                               <span class="st">'#8856a7'</span>))<span class="op">+</span><span class="kw">theme_bw</span>()<span class="op">+</span></div>
+<div class="sourceLine" id="cb10-15" data-line-number="15"><span class="st">  </span></div>
+<div class="sourceLine" id="cb10-16" data-line-number="16"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;&quot;</span>,<span class="dt">y=</span><span class="st">&quot;Cat preference&quot;</span>)<span class="op">+</span></div>
+<div class="sourceLine" id="cb10-17" data-line-number="17"><span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>,</div>
+<div class="sourceLine" id="cb10-18" data-line-number="18">        <span class="dt">axis.title=</span><span class="kw">element_text</span>(<span class="dt">size=</span><span class="dv">20</span>),</div>
+<div class="sourceLine" id="cb10-19" data-line-number="19">        <span class="dt">axis.text=</span><span class="kw">element_text</span>(<span class="dt">size=</span><span class="dv">15</span>),</div>
+<div class="sourceLine" id="cb10-20" data-line-number="20">        <span class="dt">legend.title=</span><span class="kw">element_text</span>(<span class="dt">size=</span><span class="dv">10</span>),</div>
+<div class="sourceLine" id="cb10-21" data-line-number="21">        <span class="dt">legend.text=</span><span class="kw">element_text</span>(<span class="dt">size=</span><span class="dv">10</span>))</div>
+<div class="sourceLine" id="cb10-22" data-line-number="22"><span class="kw">print</span>(compare)</div></code></pre>
+<pre><code>## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?</code></pre>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+</section>
+</section>
+<section id="mrp-in-rstanarm" class="level1">
+<h1>MRP in RStanArm</h1>
+<p>From visual inspection, it appears that different levels of post-stratification variable have different preferences for cats. Our survey also appears to have sampling bias; indicating that some groups were over/under sampled relative to the population. The net effect of this is that we could not make good population level estimates of cat preference straight from our sample. Our aim is to infer the preference for cats in the <em>population</em> using the post-stratification variables to account for systematic differences between the sample and population. Using rstanarm, this becomes a simple procedure.</p>
+<p>The first step is to use a multi-level generalized logistic regression model to predict preference for cats in the sample given the variables that we wish to post-stratify with. This model predicts the probability of cat preference for each of the 200 cells in the post-stratification matrix. A baseline intercept is fit for individuals in first level of all of the four post-stratification variables, and then predictors are used to estimate the change in proportion for different levels of the post-stratification variables. In the model we describe above, we use age, sex, income and ethnicity as main effects, plus an interaction effect between sex and age. This means that our model will have 4 (age) + 1 (sex) + 3 (ethnicity) + 4 (income) + 4 (age by sex interaction effect) = 16 predictors. This model is included below, with <span class="math inline">\(\theta_{j}\)</span> representing the preference for cats in the poststratification cell <span class="math inline">\(j\)</span>, and <span class="math inline">\(X_j\)</span> representing the predictors.</p>
+<p><span class="math display">\[\theta_j= logit^{-1}(X_{j}\beta)\]</span></p>
+<p>We should also take into account the clustered design of the survey, with participants clustered by state. These clusters could be accounted for by allowing each state to have it’s own baseline intercept or by allowing each state to have it’s own baseline intercept and the change between predictor levels to differ for each state. For simplicity we will use an intercept only model with states allowed to have a different baseline cat preference, but <span class="citation" data-cites="ghitza2013deep">Ghitza and Gelman (2013)</span> extend this for other possible models.</p>
+<p><span class="math display">\[\theta_j = logit^{-1}(X_{j}\beta + \alpha_{S[j]}^{S})\]</span></p>
+<p>where:</p>
+<p><span class="math display">\[\alpha_{S[j]}^{S} \sim N(0, \sigma^2_{S[j]})\]</span></p>
+<p>In the following code we predict y (preference for cats) by gender, age, ethnicity and income of participant (all measured as discrete categories). We also include the interaction between age and gender, which allows the relationship between gender and cat preference to differ with age. Lastly we include a term that suggests that the intercept might differ by state. In the appendix a number of different model structures are tabled for ease of use. They are all highly similar to the formulae used by the glmer in the lme4 package.</p>
+<p>Finally we specify the relationship between the predictors and outcome variable, in this case a logit function. The final element of the input specifies the data frame that contains the variables in the formula and manually sets the adapt_delta value.</p>
+<pre class="sourceCode r" id="cb12"><code class="sourceCode r"><div class="sourceLine" id="cb12-1" data-line-number="1">fit &lt;-<span class="st"> </span><span class="kw">stan_glmer</span>(cat.pref <span class="op">~</span><span class="st"> </span><span class="kw">factor</span>(sex) <span class="op">+</span><span class="st"> </span><span class="kw">factor</span>(age) <span class="op">+</span><span class="st"> </span><span class="kw">factor</span>(eth) <span class="op">+</span><span class="kw">factor</span>(income)<span class="op">+</span></div>
+<div class="sourceLine" id="cb12-2" data-line-number="2"><span class="st">                </span><span class="kw">factor</span>(sex)<span class="op">*</span><span class="kw">factor</span>(age) <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>state),</div>
+<div class="sourceLine" id="cb12-3" data-line-number="3">                <span class="dt">family=</span><span class="kw">binomial</span>(<span class="dt">link=</span><span class="st">&quot;logit&quot;</span>), <span class="dt">data=</span>sample,<span class="dt">adapt_delta=</span>.<span class="dv">99</span>)</div></code></pre>
+<pre><code>## trying deprecated constructor; please alert package maintainer</code></pre>
+<pre><code>## 
+## SAMPLING FOR MODEL 'bernoulli' NOW (CHAIN 1).
+## 
+## Gradient evaluation took 0.002 seconds
+## 1000 transitions using 10 leapfrog steps per transition would take 20 seconds.
+## Adjust your expectations accordingly!
+## 
+## 
+## Iteration:    1 / 2000 [  0%]  (Warmup)
+## Iteration:  200 / 2000 [ 10%]  (Warmup)
+## Iteration:  400 / 2000 [ 20%]  (Warmup)
+## Iteration:  600 / 2000 [ 30%]  (Warmup)
+## Iteration:  800 / 2000 [ 40%]  (Warmup)
+## Iteration: 1000 / 2000 [ 50%]  (Warmup)
+## Iteration: 1001 / 2000 [ 50%]  (Sampling)
+## Iteration: 1200 / 2000 [ 60%]  (Sampling)
+## Iteration: 1400 / 2000 [ 70%]  (Sampling)
+## Iteration: 1600 / 2000 [ 80%]  (Sampling)
+## Iteration: 1800 / 2000 [ 90%]  (Sampling)
+## Iteration: 2000 / 2000 [100%]  (Sampling)
+## 
+##  Elapsed Time: 125.686 seconds (Warm-up)
+##                72.128 seconds (Sampling)
+##                197.814 seconds (Total)
+## 
+## 
+## SAMPLING FOR MODEL 'bernoulli' NOW (CHAIN 2).
+## 
+## Gradient evaluation took 0.002 seconds
+## 1000 transitions using 10 leapfrog steps per transition would take 20 seconds.
+## Adjust your expectations accordingly!
+## 
+## 
+## Iteration:    1 / 2000 [  0%]  (Warmup)
+## Iteration:  200 / 2000 [ 10%]  (Warmup)
+## Iteration:  400 / 2000 [ 20%]  (Warmup)
+## Iteration:  600 / 2000 [ 30%]  (Warmup)
+## Iteration:  800 / 2000 [ 40%]  (Warmup)
+## Iteration: 1000 / 2000 [ 50%]  (Warmup)
+## Iteration: 1001 / 2000 [ 50%]  (Sampling)
+## Iteration: 1200 / 2000 [ 60%]  (Sampling)
+## Iteration: 1400 / 2000 [ 70%]  (Sampling)
+## Iteration: 1600 / 2000 [ 80%]  (Sampling)
+## Iteration: 1800 / 2000 [ 90%]  (Sampling)
+## Iteration: 2000 / 2000 [100%]  (Sampling)
+## 
+##  Elapsed Time: 126.707 seconds (Warm-up)
+##                66.333 seconds (Sampling)
+##                193.04 seconds (Total)
+## 
+## 
+## SAMPLING FOR MODEL 'bernoulli' NOW (CHAIN 3).
+## 
+## Gradient evaluation took 0.002 seconds
+## 1000 transitions using 10 leapfrog steps per transition would take 20 seconds.
+## Adjust your expectations accordingly!
+## 
+## 
+## Iteration:    1 / 2000 [  0%]  (Warmup)
+## Iteration:  200 / 2000 [ 10%]  (Warmup)
+## Iteration:  400 / 2000 [ 20%]  (Warmup)
+## Iteration:  600 / 2000 [ 30%]  (Warmup)
+## Iteration:  800 / 2000 [ 40%]  (Warmup)
+## Iteration: 1000 / 2000 [ 50%]  (Warmup)
+## Iteration: 1001 / 2000 [ 50%]  (Sampling)
+## Iteration: 1200 / 2000 [ 60%]  (Sampling)
+## Iteration: 1400 / 2000 [ 70%]  (Sampling)
+## Iteration: 1600 / 2000 [ 80%]  (Sampling)
+## Iteration: 1800 / 2000 [ 90%]  (Sampling)
+## Iteration: 2000 / 2000 [100%]  (Sampling)
+## 
+##  Elapsed Time: 128.924 seconds (Warm-up)
+##                111.445 seconds (Sampling)
+##                240.369 seconds (Total)
+## 
+## 
+## SAMPLING FOR MODEL 'bernoulli' NOW (CHAIN 4).
+## 
+## Gradient evaluation took 0.002 seconds
+## 1000 transitions using 10 leapfrog steps per transition would take 20 seconds.
+## Adjust your expectations accordingly!
+## 
+## 
+## Iteration:    1 / 2000 [  0%]  (Warmup)
+## Iteration:  200 / 2000 [ 10%]  (Warmup)
+## Iteration:  400 / 2000 [ 20%]  (Warmup)
+## Iteration:  600 / 2000 [ 30%]  (Warmup)
+## Iteration:  800 / 2000 [ 40%]  (Warmup)
+## Iteration: 1000 / 2000 [ 50%]  (Warmup)
+## Iteration: 1001 / 2000 [ 50%]  (Sampling)
+## Iteration: 1200 / 2000 [ 60%]  (Sampling)
+## Iteration: 1400 / 2000 [ 70%]  (Sampling)
+## Iteration: 1600 / 2000 [ 80%]  (Sampling)
+## Iteration: 1800 / 2000 [ 90%]  (Sampling)
+## Iteration: 2000 / 2000 [100%]  (Sampling)
+## 
+##  Elapsed Time: 142.57 seconds (Warm-up)
+##                103.897 seconds (Sampling)
+##                246.467 seconds (Total)</code></pre>
+<pre class="sourceCode r" id="cb15"><code class="sourceCode r"><div class="sourceLine" id="cb15-1" data-line-number="1"><span class="kw">print</span>(fit)</div></code></pre>
+<pre><code>## stan_glmer
+##  family:  binomial [logit]
+##  formula: cat.pref ~ factor(sex) + factor(age) + factor(eth) + factor(income) + 
+##     factor(sex) * factor(age) + (1 | state)
+## ------
+## 
+## Estimates:
+##                           Median MAD_SD
+## (Intercept)               -0.2    0.2  
+## factor(sex)2              -0.3    0.2  
+## factor(age)2               0.3    0.2  
+## factor(age)3               0.1    0.2  
+## factor(age)4               0.9    0.2  
+## factor(age)5               1.1    0.2  
+## factor(eth)2               0.9    0.2  
+## factor(eth)3               0.4    0.1  
+## factor(eth)4               1.0    0.1  
+## factor(income)2            0.0    0.1  
+## factor(income)3            0.3    0.1  
+## factor(income)4            0.5    0.2  
+## factor(income)5            0.8    0.2  
+## factor(sex)2:factor(age)2 -0.6    0.3  
+## factor(sex)2:factor(age)3 -0.6    0.2  
+## factor(sex)2:factor(age)4 -0.6    0.3  
+## factor(sex)2:factor(age)5 -1.0    0.2  
+## 
+## Error terms:
+##  Groups Name        Std.Dev.
+##  state  (Intercept) 0.24    
+## Num. levels: state 5 
+## 
+## Sample avg. posterior predictive 
+## distribution of y (X = xbar):
+##          Median MAD_SD
+## mean_PPD 0.7    0.0   
+## 
+## ------
+## For info on the priors used see help('prior_summary.stanreg').</code></pre>
+<p>As a first pass to check whether the model is performing well, note that there are no warnings about divergent chains, failure to converge or tree depth. If these errors do occur, more information on how to alleviate them is provided <a href="https://cran.rstudio.com/web/packages/rstanarm/vignettes/rstanarm.html#step-3-criticize-the-model" title="Criticize the model">here</a>. Many diagnostic plots to test model performance can be produced and explored with the command</p>
+<pre class="sourceCode r" id="cb17"><code class="sourceCode r"><div class="sourceLine" id="cb17-1" data-line-number="1"><span class="kw">launch_shinystan</span>(fit)</div></code></pre>
+<section id="population-estimate" class="level2">
+<h2>Population Estimate</h2>
+<p>From this we get a summary of the baseline log odds of cat preference at the first element of each factor (i.e., gender = 1, age = 1, ethnicity = 1 and income = 1) for each state, plus estimates on how being in different levels of each post-stratification variable change the log odds. Whilst this is interesting, currently all we have achieved is a model that predicts cat preference given a number of factor-type predictors in a sample. What we would like to do is estimate cat preference in the population by accounting for differences between our sample and the population. We use the posterior_linpred function to obtain posterior estimates for cat preference given the proportion of people in the <em>population</em> in each level of the factors included in the model.</p>
+<pre class="sourceCode r" id="cb18"><code class="sourceCode r"><div class="sourceLine" id="cb18-1" data-line-number="1">pred_sim&lt;-<span class="kw">posterior_linpred</span>(fit, <span class="dt">transform=</span><span class="ot">TRUE</span>,</div>
+<div class="sourceLine" id="cb18-2" data-line-number="2">                  <span class="dt">newdata=</span><span class="kw">as.data.frame</span>(poststrat))</div>
+<div class="sourceLine" id="cb18-3" data-line-number="3"></div>
+<div class="sourceLine" id="cb18-4" data-line-number="4">poststrat_sim &lt;-<span class="st"> </span>pred_sim <span class="op">%*%</span><span class="st"> </span>poststrat<span class="op">$</span>N <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(poststrat<span class="op">$</span>N)</div>
+<div class="sourceLine" id="cb18-5" data-line-number="5">model.popn.pref&lt;-<span class="kw">c</span>(<span class="kw">round</span>(<span class="kw">mean</span>(poststrat_sim),<span class="dv">4</span>), <span class="kw">round</span>(<span class="kw">sd</span>(poststrat_sim),<span class="dv">4</span>))</div>
+<div class="sourceLine" id="cb18-6" data-line-number="6"><span class="kw">print</span>(model.popn.pref)</div></code></pre>
+<pre><code>## [1] 0.6338 0.0115</code></pre>
+<p>We can compare this to the estimate we would have made if we had just used the sample:</p>
+<pre class="sourceCode r" id="cb20"><code class="sourceCode r"><div class="sourceLine" id="cb20-1" data-line-number="1">sample.popn.pref&lt;-<span class="kw">round</span>(<span class="kw">mean</span>(sample<span class="op">$</span>cat.pref),<span class="dv">4</span>)</div>
+<div class="sourceLine" id="cb20-2" data-line-number="2"><span class="kw">print</span>(sample.popn.pref)</div></code></pre>
+<pre><code>## [1] 0.6877</code></pre>
+<p>We can also add it to the last figure to graphically represent the difference between the sample and population estimate.</p>
+<pre class="sourceCode r" id="cb22"><code class="sourceCode r"><div class="sourceLine" id="cb22-1" data-line-number="1">compare&lt;-compare<span class="op">+</span><span class="st">  </span><span class="kw">geom_hline</span>(<span class="dt">yintercept =</span>model.popn.pref,<span class="dt">size=</span><span class="dv">1</span>,<span class="dt">linetype=</span><span class="st">'dashed'</span>)</div>
+<div class="sourceLine" id="cb22-2" data-line-number="2"><span class="kw">print</span>(compare)</div></code></pre>
+<pre><code>## Warning: Removed 1 rows containing missing values (geom_hline).</code></pre>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+<p>As this is simulated data, we can look directly at the preference for cats that we simulated from to consider how good our estimate is.</p>
+<pre class="sourceCode r" id="cb24"><code class="sourceCode r"><div class="sourceLine" id="cb24-1" data-line-number="1">true.popn.pref&lt;-<span class="kw">round</span>(<span class="kw">sum</span>(true.popn<span class="op">$</span>cat.pref<span class="op">*</span>poststrat<span class="op">$</span>N)<span class="op">/</span><span class="kw">sum</span>(poststrat<span class="op">$</span>N),<span class="dv">4</span>)</div>
+<div class="sourceLine" id="cb24-2" data-line-number="2"><span class="kw">print</span>(true.popn.pref)</div></code></pre>
+<pre><code>## [1] 0.6193</code></pre>
+<p>Which we will also add to the figure.</p>
+<pre class="sourceCode r" id="cb26"><code class="sourceCode r"><div class="sourceLine" id="cb26-1" data-line-number="1">compare&lt;-compare<span class="op">+</span><span class="st">  </span><span class="kw">geom_hline</span>(<span class="dt">yintercept =</span>true.popn.pref,<span class="dt">size=</span><span class="dv">1</span>,<span class="dt">colour=</span><span class="st">'grey'</span>)</div>
+<div class="sourceLine" id="cb26-2" data-line-number="2"><span class="kw">print</span>(compare)</div></code></pre>
+<pre><code>## Warning: Removed 1 rows containing missing values (geom_hline).</code></pre>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+<p>Our MRP estimate is off by only .01 points (about 1%), while our sample estimate is off by almost 7%. This indicates that using MRP helps to make estimates for the population from our sample that are more accurate.</p>
+</section>
+<section id="estimate-for-states" class="level2">
+<h2>Estimate for states</h2>
+<p>One of the nice benefits of using MRP to make inference about the population is that we can change the population of interest. In the previous paragraph we inferred the preference for cats in the whole population. We can also infer the preference for cats in a single state. In the following code we post-stratify for each state in turn. Note that we can reuse the predictive model from the previous step and update for different population demographics. This is particularly useful for complicated cases or large data sets where the model takes some time to fit.</p>
+<p>As before, first we use the proportion of the population in each combination of post-stratification group to estimate the proportion of people who preferred cats in the population, only in this case the population of interest is the state.</p>
+<pre class="sourceCode r" id="cb28"><code class="sourceCode r"><div class="sourceLine" id="cb28-1" data-line-number="1">state_df&lt;-<span class="kw">data.frame</span>(<span class="dt">State=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">5</span>),</div>
+<div class="sourceLine" id="cb28-2" data-line-number="2">           <span class="dt">model.state.sd=</span><span class="kw">rep</span>(<span class="op">-</span><span class="dv">1</span>,<span class="dv">5</span>),</div>
+<div class="sourceLine" id="cb28-3" data-line-number="3">           <span class="dt">model.state.pref=</span><span class="kw">rep</span>(<span class="op">-</span><span class="dv">1</span>,<span class="dv">5</span>),</div>
+<div class="sourceLine" id="cb28-4" data-line-number="4">           <span class="dt">sample.state.pref=</span><span class="kw">rep</span>(<span class="op">-</span><span class="dv">1</span>,<span class="dv">5</span>),</div>
+<div class="sourceLine" id="cb28-5" data-line-number="5">           <span class="dt">true.state.pref=</span><span class="kw">rep</span>(<span class="op">-</span><span class="dv">1</span>,<span class="dv">5</span>),</div>
+<div class="sourceLine" id="cb28-6" data-line-number="6">           <span class="dt">N =</span> <span class="kw">rep</span>(<span class="op">-</span><span class="dv">1</span>,<span class="dv">5</span>))</div>
+<div class="sourceLine" id="cb28-7" data-line-number="7"></div>
+<div class="sourceLine" id="cb28-8" data-line-number="8"></div>
+<div class="sourceLine" id="cb28-9" data-line-number="9"><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(<span class="kw">levels</span>(<span class="kw">as.factor</span>(poststrat<span class="op">$</span>state)))){</div>
+<div class="sourceLine" id="cb28-10" data-line-number="10">  poststrat_state&lt;-poststrat[poststrat<span class="op">$</span>state<span class="op">==</span>i,]</div>
+<div class="sourceLine" id="cb28-11" data-line-number="11"> </div>
+<div class="sourceLine" id="cb28-12" data-line-number="12">  pred_sim_state&lt;-<span class="kw">posterior_linpred</span>(fit, <span class="dt">transform=</span><span class="ot">TRUE</span>, <span class="dt">draw=</span><span class="dv">1000</span>,</div>
+<div class="sourceLine" id="cb28-13" data-line-number="13">                              <span class="dt">newdata=</span><span class="kw">as.data.frame</span>(poststrat_state))</div>
+<div class="sourceLine" id="cb28-14" data-line-number="14">  </div>
+<div class="sourceLine" id="cb28-15" data-line-number="15">  poststrat_sim_state&lt;-<span class="st"> </span>(pred_sim_state <span class="op">%*%</span><span class="st"> </span>poststrat_state<span class="op">$</span>N) <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(poststrat_state<span class="op">$</span>N)</div>
+<div class="sourceLine" id="cb28-16" data-line-number="16">  </div>
+<div class="sourceLine" id="cb28-17" data-line-number="17">  <span class="co">#This is the estimate for popn in state:</span></div>
+<div class="sourceLine" id="cb28-18" data-line-number="18">  state_df<span class="op">$</span>model.state.pref[i]&lt;-<span class="kw">round</span>(<span class="kw">mean</span>(poststrat_sim_state),<span class="dv">4</span>)</div>
+<div class="sourceLine" id="cb28-19" data-line-number="19">  state_df<span class="op">$</span>model.state.sd[i]&lt;-<span class="kw">round</span>(<span class="kw">sd</span>(poststrat_sim_state),<span class="dv">4</span>)</div>
+<div class="sourceLine" id="cb28-20" data-line-number="20">    <span class="co">#This is the estimate for sample</span></div>
+<div class="sourceLine" id="cb28-21" data-line-number="21">  state_df<span class="op">$</span>sample.state.pref[i]&lt;-<span class="kw">round</span>(<span class="kw">mean</span>(sample<span class="op">$</span>cat.pref[sample<span class="op">$</span>state<span class="op">==</span>i]),<span class="dv">4</span>)</div>
+<div class="sourceLine" id="cb28-22" data-line-number="22">  <span class="co">#And what is the actual popn?</span></div>
+<div class="sourceLine" id="cb28-23" data-line-number="23">  state_df<span class="op">$</span>true.state.pref[i]&lt;-<span class="kw">round</span>(<span class="kw">sum</span>(true.popn<span class="op">$</span>cat.pref[true.popn<span class="op">$</span>state<span class="op">==</span>i]<span class="op">*</span>poststrat_state<span class="op">$</span>N)<span class="op">/</span><span class="kw">sum</span>(poststrat_state<span class="op">$</span>N),<span class="dv">4</span>)</div>
+<div class="sourceLine" id="cb28-24" data-line-number="24">  state_df<span class="op">$</span>N[i]&lt;-<span class="kw">length</span>(sample<span class="op">$</span>cat.pref[sample<span class="op">$</span>state<span class="op">==</span>i])</div>
+<div class="sourceLine" id="cb28-25" data-line-number="25">}</div>
+<div class="sourceLine" id="cb28-26" data-line-number="26"></div>
+<div class="sourceLine" id="cb28-27" data-line-number="27"><span class="kw">print</span>(state_df)</div></code></pre>
+<pre><code>##   State model.state.sd model.state.pref sample.state.pref true.state.pref
+## 1     1         0.0180           0.6325            0.6750          0.6040
+## 2     2         0.0174           0.6221            0.6631          0.6259
+## 3     3         0.0264           0.6258            0.6696          0.6040
+## 4     4         0.0255           0.6128            0.6350          0.6040
+## 5     5         0.0160           0.6712            0.7256          0.6475
+##      N
+## 1  600
+## 2  754
+## 3  224
+## 4  263
+## 5 1159</code></pre>
+<p>Here we similar findings to when we considered the population as whole. While estimates for cat preference using the sample are over 7% off, the MRP based estimates are much closer to the actual preference (just under 3% off), even when the sample size for that population is relatively small (especially state 3 and state 4). This is easier to see graphically, so we will continue to add additional layers to the previous figure. Here we add Model estimates,represented by triangles, and the true population cat preference, represented as transparent circles.</p>
+<pre class="sourceCode r" id="cb30"><code class="sourceCode r"><div class="sourceLine" id="cb30-1" data-line-number="1"><span class="co">#Summarise by state</span></div>
+<div class="sourceLine" id="cb30-2" data-line-number="2">compare&lt;-compare<span class="op">+</span></div>
+<div class="sourceLine" id="cb30-3" data-line-number="3"><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">data=</span>state_df, <span class="dt">mapping=</span><span class="kw">aes</span>(<span class="dt">x=</span>State<span class="fl">+.2</span>, <span class="dt">y=</span>model.state.pref, <span class="dt">colour=</span><span class="kw">as.factor</span>(State)),<span class="dt">size=</span><span class="dv">4</span>,<span class="dt">shape=</span><span class="dv">17</span>,<span class="dt">inherit.aes=</span><span class="ot">FALSE</span>)<span class="op">+</span></div>
+<div class="sourceLine" id="cb30-4" data-line-number="4"><span class="st">  </span><span class="kw">geom_errorbar</span>(<span class="dt">data=</span>state_df,<span class="dt">mapping=</span><span class="kw">aes</span>(<span class="dt">x=</span>State<span class="fl">+.2</span>,<span class="dt">ymin=</span>model.state.pref<span class="op">-</span>model.state.sd, <span class="dt">ymax=</span>model.state.pref<span class="op">+</span>model.state.sd,<span class="dt">colour=</span><span class="kw">as.factor</span>(State),<span class="dt">y=</span><span class="ot">NULL</span>), <span class="dt">width=</span>.<span class="dv">1</span>,<span class="dt">size=</span><span class="dv">1</span>,<span class="dt">inherit.aes=</span><span class="ot">FALSE</span>)<span class="op">+</span></div>
+<div class="sourceLine" id="cb30-5" data-line-number="5"><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">data=</span>state_df, <span class="dt">mapping=</span><span class="kw">aes</span>(<span class="dt">x=</span>State<span class="fl">+.1</span>, <span class="dt">y=</span>true.state.pref, <span class="dt">colour=</span><span class="kw">as.factor</span>(State)),<span class="dt">size=</span><span class="dv">4</span>,<span class="dt">alpha=</span>.<span class="dv">5</span>,<span class="dt">shape=</span><span class="dv">19</span>,<span class="dt">inherit.aes=</span><span class="ot">FALSE</span>)</div>
+<div class="sourceLine" id="cb30-6" data-line-number="6">  </div>
+<div class="sourceLine" id="cb30-7" data-line-number="7"><span class="kw">print</span>(compare)</div></code></pre>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+</section>
+</section>
+<section id="other-formats" class="level1">
+<h1>Other formats</h1>
+<section id="alternate-methods-of-modelling" class="level2">
+<h2>Alternate methods of modelling</h2>
+<p>Previously the model ‘fit’ was created by modelling the dependent variable as a binary outcome. An alternative form of this model is to model the proportion of success (or endorsement of cat preference in this case) out of the total number of people in that cell in the sample. To do this we need to create two n x 1 outcome variables, cat.pref and n.</p>
+<pre class="sourceCode r" id="cb31"><code class="sourceCode r"><div class="sourceLine" id="cb31-1" data-line-number="1">sample.alt&lt;-sample<span class="op">%&gt;%</span></div>
+<div class="sourceLine" id="cb31-2" data-line-number="2"><span class="st">  </span><span class="kw">group_by</span>(sex, age,income, state, eth)<span class="op">%&gt;%</span></div>
+<div class="sourceLine" id="cb31-3" data-line-number="3"><span class="st">  </span><span class="kw">summarise</span>(<span class="dt">cat.pref.tot=</span><span class="kw">sum</span>(cat.pref),<span class="dt">N=</span><span class="kw">n</span>())<span class="op">%&gt;%</span></div>
+<div class="sourceLine" id="cb31-4" data-line-number="4"><span class="st">  </span><span class="kw">ungroup</span>()</div>
+<div class="sourceLine" id="cb31-5" data-line-number="5">pref=sample.alt<span class="op">$</span>cat.pref.tot</div>
+<div class="sourceLine" id="cb31-6" data-line-number="6">N=sample.alt<span class="op">$</span>N</div></code></pre>
+<p>We then can use these two outcome variables to model the data as samples from a binomial distribution.</p>
+<pre class="sourceCode r" id="cb32"><code class="sourceCode r"><div class="sourceLine" id="cb32-1" data-line-number="1">fit2 &lt;-<span class="st"> </span><span class="kw">stan_glmer</span>(<span class="kw">cbind</span>(pref,N<span class="op">-</span>pref) <span class="op">~</span><span class="st"> </span><span class="kw">factor</span>(sex) <span class="op">+</span><span class="st"> </span><span class="kw">factor</span>(age) <span class="op">+</span><span class="st"> </span><span class="kw">factor</span>(eth) <span class="op">+</span><span class="kw">factor</span>(income)<span class="op">+</span></div>
+<div class="sourceLine" id="cb32-2" data-line-number="2"><span class="st">                </span><span class="kw">factor</span>(sex)<span class="op">*</span><span class="kw">factor</span>(age) <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>state),</div>
+<div class="sourceLine" id="cb32-3" data-line-number="3">                <span class="dt">family=</span><span class="kw">binomial</span>(<span class="st">&quot;logit&quot;</span>), <span class="dt">data=</span>sample.alt,<span class="dt">adapt_delta=</span>.<span class="dv">99</span>)</div></code></pre>
+<pre><code>## trying deprecated constructor; please alert package maintainer</code></pre>
+<pre><code>## 
+## SAMPLING FOR MODEL 'binomial' NOW (CHAIN 1).
+## 
+## Gradient evaluation took 0.001 seconds
+## 1000 transitions using 10 leapfrog steps per transition would take 10 seconds.
+## Adjust your expectations accordingly!
+## 
+## 
+## Iteration:    1 / 2000 [  0%]  (Warmup)
+## Iteration:  200 / 2000 [ 10%]  (Warmup)
+## Iteration:  400 / 2000 [ 20%]  (Warmup)
+## Iteration:  600 / 2000 [ 30%]  (Warmup)
+## Iteration:  800 / 2000 [ 40%]  (Warmup)
+## Iteration: 1000 / 2000 [ 50%]  (Warmup)
+## Iteration: 1001 / 2000 [ 50%]  (Sampling)
+## Iteration: 1200 / 2000 [ 60%]  (Sampling)
+## Iteration: 1400 / 2000 [ 70%]  (Sampling)
+## Iteration: 1600 / 2000 [ 80%]  (Sampling)
+## Iteration: 1800 / 2000 [ 90%]  (Sampling)
+## Iteration: 2000 / 2000 [100%]  (Sampling)
+## 
+##  Elapsed Time: 54.503 seconds (Warm-up)
+##                39.903 seconds (Sampling)
+##                94.406 seconds (Total)
+## 
+## 
+## SAMPLING FOR MODEL 'binomial' NOW (CHAIN 2).
+## 
+## Gradient evaluation took 0.001 seconds
+## 1000 transitions using 10 leapfrog steps per transition would take 10 seconds.
+## Adjust your expectations accordingly!
+## 
+## 
+## Iteration:    1 / 2000 [  0%]  (Warmup)
+## Iteration:  200 / 2000 [ 10%]  (Warmup)
+## Iteration:  400 / 2000 [ 20%]  (Warmup)
+## Iteration:  600 / 2000 [ 30%]  (Warmup)
+## Iteration:  800 / 2000 [ 40%]  (Warmup)
+## Iteration: 1000 / 2000 [ 50%]  (Warmup)
+## Iteration: 1001 / 2000 [ 50%]  (Sampling)
+## Iteration: 1200 / 2000 [ 60%]  (Sampling)
+## Iteration: 1400 / 2000 [ 70%]  (Sampling)
+## Iteration: 1600 / 2000 [ 80%]  (Sampling)
+## Iteration: 1800 / 2000 [ 90%]  (Sampling)
+## Iteration: 2000 / 2000 [100%]  (Sampling)
+## 
+##  Elapsed Time: 53.798 seconds (Warm-up)
+##                43.113 seconds (Sampling)
+##                96.911 seconds (Total)
+## 
+## 
+## SAMPLING FOR MODEL 'binomial' NOW (CHAIN 3).
+## 
+## Gradient evaluation took 0 seconds
+## 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+## Adjust your expectations accordingly!
+## 
+## 
+## Iteration:    1 / 2000 [  0%]  (Warmup)
+## Iteration:  200 / 2000 [ 10%]  (Warmup)
+## Iteration:  400 / 2000 [ 20%]  (Warmup)
+## Iteration:  600 / 2000 [ 30%]  (Warmup)
+## Iteration:  800 / 2000 [ 40%]  (Warmup)
+## Iteration: 1000 / 2000 [ 50%]  (Warmup)
+## Iteration: 1001 / 2000 [ 50%]  (Sampling)
+## Iteration: 1200 / 2000 [ 60%]  (Sampling)
+## Iteration: 1400 / 2000 [ 70%]  (Sampling)
+## Iteration: 1600 / 2000 [ 80%]  (Sampling)
+## Iteration: 1800 / 2000 [ 90%]  (Sampling)
+## Iteration: 2000 / 2000 [100%]  (Sampling)
+## 
+##  Elapsed Time: 58.62 seconds (Warm-up)
+##                41.098 seconds (Sampling)
+##                99.718 seconds (Total)
+## 
+## 
+## SAMPLING FOR MODEL 'binomial' NOW (CHAIN 4).
+## 
+## Gradient evaluation took 0 seconds
+## 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+## Adjust your expectations accordingly!
+## 
+## 
+## Iteration:    1 / 2000 [  0%]  (Warmup)
+## Iteration:  200 / 2000 [ 10%]  (Warmup)
+## Iteration:  400 / 2000 [ 20%]  (Warmup)
+## Iteration:  600 / 2000 [ 30%]  (Warmup)
+## Iteration:  800 / 2000 [ 40%]  (Warmup)
+## Iteration: 1000 / 2000 [ 50%]  (Warmup)
+## Iteration: 1001 / 2000 [ 50%]  (Sampling)
+## Iteration: 1200 / 2000 [ 60%]  (Sampling)
+## Iteration: 1400 / 2000 [ 70%]  (Sampling)
+## Iteration: 1600 / 2000 [ 80%]  (Sampling)
+## Iteration: 1800 / 2000 [ 90%]  (Sampling)
+## Iteration: 2000 / 2000 [100%]  (Sampling)
+## 
+##  Elapsed Time: 53.522 seconds (Warm-up)
+##                37.072 seconds (Sampling)
+##                90.594 seconds (Total)</code></pre>
+<pre><code>## Warning: There were 1 divergent transitions after warmup. Increasing adapt_delta above 0.99 may help. See
+## http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup</code></pre>
+<pre><code>## Warning: Examine the pairs() plot to diagnose sampling problems</code></pre>
+<pre class="sourceCode r" id="cb37"><code class="sourceCode r"><div class="sourceLine" id="cb37-1" data-line-number="1"><span class="kw">print</span>(fit2)</div></code></pre>
+<pre><code>## stan_glmer
+##  family:  binomial [logit]
+##  formula: cbind(pref, N - pref) ~ factor(sex) + factor(age) + factor(eth) + 
+##     factor(income) + factor(sex) * factor(age) + (1 | state)
+## ------
+## 
+## Estimates:
+##                           Median MAD_SD
+## (Intercept)               -0.2    0.2  
+## factor(sex)2              -0.3    0.2  
+## factor(age)2               0.3    0.2  
+## factor(age)3               0.1    0.2  
+## factor(age)4               0.9    0.2  
+## factor(age)5               1.2    0.2  
+## factor(eth)2               0.9    0.1  
+## factor(eth)3               0.4    0.1  
+## factor(eth)4               1.0    0.1  
+## factor(income)2            0.0    0.1  
+## factor(income)3            0.3    0.1  
+## factor(income)4            0.5    0.2  
+## factor(income)5            0.8    0.2  
+## factor(sex)2:factor(age)2 -0.6    0.3  
+## factor(sex)2:factor(age)3 -0.6    0.2  
+## factor(sex)2:factor(age)4 -0.6    0.3  
+## factor(sex)2:factor(age)5 -1.0    0.3  
+## 
+## Error terms:
+##  Groups Name        Std.Dev.
+##  state  (Intercept) 0.26    
+## Num. levels: state 5 
+## 
+## Sample avg. posterior predictive 
+## distribution of y (X = xbar):
+##          Median MAD_SD
+## mean_PPD 2.8    0.0   
+## 
+## ------
+## For info on the priors used see help('prior_summary.stanreg').</code></pre>
+<p>Like before, we can use the posterior_linpred function to obtain an estimate of the preference for cats in the population. This is particularly useful because the two forms are mathematically equivalent, so we can use whichever form is most convenient for the data at hand. More details on these two forms are available <a href="https://cran.r-project.org/web/packages/rstanarm/vignettes/binomial.html">here</a>.</p>
+<pre class="sourceCode r" id="cb39"><code class="sourceCode r"><div class="sourceLine" id="cb39-1" data-line-number="1">pred_sim.alt&lt;-<span class="kw">posterior_linpred</span>(fit2, <span class="dt">transform=</span><span class="ot">TRUE</span>,</div>
+<div class="sourceLine" id="cb39-2" data-line-number="2">                  <span class="dt">newdata=</span><span class="kw">as.data.frame</span>(poststrat))</div>
+<div class="sourceLine" id="cb39-3" data-line-number="3"></div>
+<div class="sourceLine" id="cb39-4" data-line-number="4">poststrat_sim.alt&lt;-<span class="st"> </span>pred_sim.alt <span class="op">%*%</span><span class="st"> </span>poststrat<span class="op">$</span>N <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(poststrat<span class="op">$</span>N)</div>
+<div class="sourceLine" id="cb39-5" data-line-number="5">model.popn.pref.alt&lt;-<span class="kw">c</span>(<span class="kw">round</span>(<span class="kw">mean</span>(poststrat_sim.alt),<span class="dv">4</span>), <span class="kw">round</span>(<span class="kw">sd</span>(poststrat_sim.alt),<span class="dv">4</span>))</div>
+<div class="sourceLine" id="cb39-6" data-line-number="6"><span class="kw">print</span>(model.popn.pref.alt)</div></code></pre>
+<pre><code>## [1] 0.6333 0.0118</code></pre>
+</section>
+<section id="alternate-method-of-estimating-the-population" class="level2">
+<h2>Alternate method of estimating the population</h2>
+<p>In rstanarm there is an alternate method of sampling from the posterior. Whilst the posterior_linpred function allows the user to obtain an estimate of the probability of cat preference given membership of a particular post stratification cell, the posterior_predict function generates new instances of the outcome variable given membership of a particular cell.</p>
+<p>Accordingly, using the first model where the outcome variable is binary, posterior_predict draws (in this case <span class="math inline">\(4000\)</span>) from the fitted model for each cell of the post-stratification matrix and returns the outcome variable (i.e., preference for cats) for each draw. We can use this to estimate the preference for cats in the population.</p>
+<pre class="sourceCode r" id="cb41"><code class="sourceCode r"><div class="sourceLine" id="cb41-1" data-line-number="1">posterior_sim.alt&lt;-<span class="kw">posterior_predict</span>(fit,</div>
+<div class="sourceLine" id="cb41-2" data-line-number="2">                  <span class="dt">newdata=</span><span class="kw">data.frame</span>(poststrat,<span class="dt">cat.pref=</span><span class="kw">rep</span>(<span class="dv">0</span>,<span class="dv">1000</span>)), <span class="dt">draws=</span><span class="dv">4000</span>)</div>
+<div class="sourceLine" id="cb41-3" data-line-number="3"></div>
+<div class="sourceLine" id="cb41-4" data-line-number="4">poststrat_sim.alt &lt;-<span class="st"> </span><span class="kw">apply</span>(posterior_sim.alt<span class="op">/</span>poststrat<span class="op">$</span>N,<span class="kw">c</span>(<span class="dv">2</span>),mean)</div>
+<div class="sourceLine" id="cb41-5" data-line-number="5">model.popn.pref.alt&lt;-<span class="kw">c</span>(<span class="kw">round</span>(<span class="kw">mean</span>(poststrat_sim),<span class="dv">4</span>), <span class="kw">round</span>(<span class="kw">sd</span>(poststrat_sim),<span class="dv">4</span>))</div>
+<div class="sourceLine" id="cb41-6" data-line-number="6"><span class="kw">print</span>(model.popn.pref.alt)</div></code></pre>
+<pre><code>## [1] 0.6338 0.0115</code></pre>
+<p>We can also use the posterior_predict function with the alternative form of the model, fit2. In this case the posterior_predict function uses the <span class="math inline">\(N\)</span> variable that contains the total number of people in each post-stratification cell in the population, and predicts how many out of that <span class="math inline">\(N\)</span> would prefer cats. Note that when using the posterior_predict function, we need to specify cat.pref/pref as an vector of <span class="math inline">\(0\)</span> when specifying new data.</p>
+<pre class="sourceCode r" id="cb43"><code class="sourceCode r"><div class="sourceLine" id="cb43-1" data-line-number="1">posterior_sim.alt&lt;-<span class="kw">posterior_predict</span>(fit2,</div>
+<div class="sourceLine" id="cb43-2" data-line-number="2">                  <span class="dt">newdata=</span><span class="kw">data.frame</span>(poststrat,<span class="dt">pref=</span><span class="kw">rep</span>(<span class="dv">0</span>,<span class="dv">1000</span>)), <span class="dt">draws=</span><span class="dv">4000</span>)</div>
+<div class="sourceLine" id="cb43-3" data-line-number="3"></div>
+<div class="sourceLine" id="cb43-4" data-line-number="4">poststrat_sim.alt &lt;-<span class="st"> </span><span class="kw">apply</span>(posterior_sim.alt<span class="op">/</span>poststrat<span class="op">$</span>N,<span class="kw">c</span>(<span class="dv">2</span>),mean)</div>
+<div class="sourceLine" id="cb43-5" data-line-number="5">model.popn.pref.alt&lt;-<span class="kw">c</span>(<span class="kw">round</span>(<span class="kw">mean</span>(poststrat_sim),<span class="dv">4</span>), <span class="kw">round</span>(<span class="kw">sd</span>(poststrat_sim),<span class="dv">4</span>))</div>
+<div class="sourceLine" id="cb43-6" data-line-number="6"><span class="kw">print</span>(model.popn.pref.alt)</div></code></pre>
+<pre><code>## [1] 0.6338 0.0115</code></pre>
+</section>
+<section id="examples-of-other-formula" class="level2">
+<h2>Examples of other formula</h2>
+<p>Examples of other formula for fitting mixture models in Rstanarm are analougous to those in the lmer4 package. A table of examples can be found in Table 2 of the vignette for the lmer4 package, available <a href="https://cran.r-project.org/web/packages/lme4/vignettes/lmer.pdf">here</a>.</p>
+</section>
+</section>
+<section id="references" class="level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references">
+<div id="ref-ghitza2013deep">
+<p>Ghitza, Yair, and Andrew Gelman. 2013. “Deep Interactions with Mrp: Election Turnout and Voting Patterns Among Small Electoral Subgroups.” <em>American Journal of Political Science</em> 57 (3). Wiley Online Library: 762–76.</p>
+</div>
+<div id="ref-lax2009should">
+<p>Lax, Jeffrey R, and Justin H Phillips. 2009. “How Should We Estimate Public Opinion in the States?” <em>American Journal of Political Science</em> 53 (1). Wiley Online Library: 107–21.</p>
+</div>
+<div id="ref-lei20172008">
+<p>Lei, Rayleigh, Andrew Gelman, and Yair Ghitza. 2017. “The 2008 Election: A Preregistered Replication Analysis.” <em>Statistics and Public Policy</em>. Taylor &amp; Francis, 1–8.</p>
+</div>
+<div id="ref-little1993post">
+<p>Little, Roderick JA. 1993. “Post-Stratification: A Modeler’s Perspective.” <em>Journal of the American Statistical Association</em> 88 (423). Taylor &amp; Francis Group: 1001–12.</p>
+</div>
+<div id="ref-park2004bayesian">
+<p>Park, David K, Andrew Gelman, and Joseph Bafumi. 2004. “Bayesian Multilevel Estimation with Poststratification: State-Level Estimates from National Polls.” <em>Political Analysis</em> 12 (4). Cambridge University Press: 375–85.</p>
+</div>
+<div id="ref-shirley2015hierarchical">
+<p>Shirley, Kenneth E, and Andrew Gelman. 2015. “Hierarchical Models for Estimating State and Demographic Trends in Us Death Penalty Public Opinion.” <em>Journal of the Royal Statistical Society: Series A (Statistics in Society)</em> 178 (1). Wiley Online Library: 1–28.</p>
+</div>
+<div id="ref-RStanArm">
+<p>Stan Development Team. 2016. “Rstanarm: Bayesian Applied Regression Modeling via Stan.” <a href="http://mc-stan.org/" class="uri">http://mc-stan.org/</a>.</p>
+</div>
+</div>
+</section>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
