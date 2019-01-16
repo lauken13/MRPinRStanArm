@@ -58,7 +58,7 @@ for (j in 1:prod(J)){
     p_response_inc[poststrat[j,4]]*p_response_state[poststrat[j,5]]
 }
 
-n <- 4626
+n <- 1200
 people <- sample(prod(J), n, replace=TRUE, prob=poststrat$N*p_response)
 
 ## For respondent i, people[i] is that person's poststrat cell,
